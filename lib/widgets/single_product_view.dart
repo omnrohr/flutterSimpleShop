@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../pages/single_product_details.dart';
 
 class SingleProductView extends StatelessWidget {
-  final Product product;
+  // final Product product;
 
-  SingleProductView(this.product);
+  // SingleProductView(this.product);
 
   @override
   Widget build(BuildContext context) {
+    final providerProduct = Provider.of<Product>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(4),
       child: GridTile(
         footer: GridTileBar(
           leading: IconButton(
-            icon: Icon(Icons.favorite),
-            onPressed: () {},
+            icon: Icon(providerProduct.isFavorite
+                ? Icons.favorite
+                : Icons.favorite_border),
+            onPressed: () {
+              providerProduct.toggleFavorite();
+            },
           ),
           trailing: IconButton(
             icon: Icon(Icons.shopping_bag),
@@ -23,7 +29,7 @@ class SingleProductView extends StatelessWidget {
           ),
           backgroundColor: Colors.grey,
           title: Text(
-            product.title,
+            providerProduct.title,
             textAlign: TextAlign.center,
           ),
         ),
@@ -33,13 +39,13 @@ class SingleProductView extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: ((_) {
-                  return SingleProductDetails(product);
+                  return SingleProductDetails(providerProduct.id);
                 }),
               ),
             );
           },
           child: Image.network(
-            product.imageURL,
+            providerProduct.imageURL,
             fit: BoxFit.cover,
           ),
         ),

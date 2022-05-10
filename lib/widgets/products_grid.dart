@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/product.dart';
 import '../providers/provider_products.dart';
 import '../widgets/single_product_view.dart';
 
@@ -18,7 +17,11 @@ class ProductsGrid extends StatelessWidget {
           childAspectRatio: 3 / 2,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10),
-      itemBuilder: (_, i) => SingleProductView(products[i]),
+      itemBuilder: (_, i) => ChangeNotifierProvider.value(
+        child: SingleProductView(),
+        // create: (context) => products[i],
+        value: products[i],
+      ),
     );
   }
 }

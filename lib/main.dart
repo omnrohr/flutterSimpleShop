@@ -11,11 +11,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (ctx) => ProviderProduct(),
+      create: (_) => ProviderProduct(),
+      // value: ProviderProduct(),
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData.dark().copyWith(
-          textTheme: TextTheme(
+          textTheme: const TextTheme(
             headline6: TextStyle(
                 fontFamily: 'Lato', fontWeight: FontWeight.bold, fontSize: 25),
           ),
