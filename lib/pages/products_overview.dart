@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/providers/provider_products.dart';
+import 'package:myapp/pages/cart.dart';
 import 'package:provider/provider.dart';
 
 import '../models/product.dart';
 import '../widgets/products_grid.dart';
+import '../widgets/badge.dart';
+import '../models/cart.dart';
 
 enum Filters { Favorites, All }
 
 final List<Product> products = [];
 
 class ProductsOverview extends StatefulWidget {
+  static const productsOverviewRout = '/products';
   @override
   State<ProductsOverview> createState() => _ProductsOverviewState();
 }
@@ -19,6 +22,8 @@ class _ProductsOverviewState extends State<ProductsOverview> {
 
   @override
   Widget build(BuildContext context) {
+    // var cart = Provider.of<Cart>(context); with this approach it will build all screen so better approach is
+    // to call consumers at the widget which interested.
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -43,7 +48,19 @@ class _ProductsOverviewState extends State<ProductsOverview> {
                 }
               });
             },
-          )
+          ),
+          Consumer<Cart>(
+            builder: (context, cart, passedChild) => Badge(
+              value: cart.count.toString(),
+              child: passedChild,
+            ),
+            child: IconButton(
+              icon: Icon(Icons.shopping_bag),
+              onPressed: () {
+                Navigator.pushNamed(context, CartView.cartRout);
+              },
+            ),
+          ),
         ],
         title: Text('My Shop'),
       ),

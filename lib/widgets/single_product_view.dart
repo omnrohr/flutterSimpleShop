@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../pages/single_product_details.dart';
+import '../models/cart.dart';
 
 class SingleProductView extends StatelessWidget {
   // final Product product;
@@ -11,6 +12,8 @@ class SingleProductView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final providerProduct = Provider.of<Product>(context);
+    final cart = Provider.of<Cart>(context, listen: false);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(4),
       child: GridTile(
@@ -25,7 +28,10 @@ class SingleProductView extends StatelessWidget {
           ),
           trailing: IconButton(
             icon: Icon(Icons.shopping_bag),
-            onPressed: () {},
+            onPressed: () {
+              cart.addItemToCart(providerProduct.id, providerProduct.price,
+                  providerProduct.title);
+            },
           ),
           backgroundColor: Colors.grey,
           title: Text(

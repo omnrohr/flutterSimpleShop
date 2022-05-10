@@ -3,6 +3,8 @@ import '../providers/provider_products.dart';
 import 'package:provider/provider.dart';
 
 import './pages/products_overview.dart';
+import './pages/cart.dart';
+import './models/cart.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,9 +12,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ProviderProduct(),
-      // value: ProviderProduct(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => ProviderProduct(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => Cart(),
+        )
+        // value: ProviderProduct(),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData.dark().copyWith(
@@ -22,6 +31,11 @@ class MyApp extends StatelessWidget {
           ),
         ),
         home: ProductsOverview(),
+        routes: {
+          ProductsOverview.productsOverviewRout: (context) =>
+              ProductsOverview(),
+          CartView.cartRout: (context) => CartView(),
+        },
       ),
     );
   }
