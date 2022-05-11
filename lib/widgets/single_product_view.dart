@@ -31,6 +31,21 @@ class SingleProductView extends StatelessWidget {
             onPressed: () {
               cart.addItemToCart(providerProduct.id, providerProduct.price,
                   providerProduct.title);
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Item added to cart',
+                    textAlign: TextAlign.center,
+                  ),
+                  duration: Duration(seconds: 2),
+                  action: SnackBarAction(
+                    label: 'UNDO',
+                    onPressed: () {
+                      cart.removeItemWithId(providerProduct.id);
+                    },
+                  ),
+                ),
+              );
             },
           ),
           backgroundColor: Colors.grey,
