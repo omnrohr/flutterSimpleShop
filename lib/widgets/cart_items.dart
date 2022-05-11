@@ -11,33 +11,32 @@ class CartItemsView extends StatelessWidget {
     return Dismissible(
       direction: DismissDirection.endToStart,
       onDismissed: (_direction) {
-        print('calling remove item');
         Provider.of<Cart>(context, listen: false).removeItem(cartItemView);
       },
       key: ValueKey(cartItemView.id),
       background: Container(
-        child: Icon(
+        child: const Icon(
           Icons.delete,
           color: Colors.white,
           size: 40,
         ),
         alignment: Alignment.centerRight,
-        padding: EdgeInsets.only(right: 20),
+        padding: const EdgeInsets.only(right: 20),
         color: Colors.red,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
       ),
       child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
         elevation: 4,
         child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: ListTile(
             leading: CircleAvatar(
               child: FittedBox(child: Text('\$${cartItemView.price}')),
             ),
             title: Text(
               cartItemView.title,
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
             subtitle:
                 Text('Total: \$${cartItemView.quantity * cartItemView.price}'),
@@ -45,6 +44,28 @@ class CartItemsView extends StatelessWidget {
           ),
         ),
       ),
+      confirmDismiss: (_direction) {
+        return showDialog(
+          context: context,
+          builder: (crx) => AlertDialog(
+            title: const Text('are you sure?'),
+            content: const Text('this action can not be reverse!'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(crx, false);
+                  },
+                  child: const Text('NO')),
+              TextButton(
+                child: const Text('YES'),
+                onPressed: () {
+                  Navigator.pop(crx, true);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
