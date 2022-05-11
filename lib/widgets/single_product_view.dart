@@ -31,6 +31,7 @@ class SingleProductView extends StatelessWidget {
             onPressed: () {
               cart.addItemToCart(providerProduct.id, providerProduct.price,
                   providerProduct.title);
+              Scaffold.of(context).hideCurrentSnackBar();
               Scaffold.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
