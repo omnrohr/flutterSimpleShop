@@ -16,13 +16,33 @@ class SingleProductDetails extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(product.title),
-      ),
-      body: Column(
-        children: [Container(child: Image.network(product.imageURL))],
-      ),
-    );
+        appBar: AppBar(
+          title: Text(product.title),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                child: Image.network(
+                  product.imageURL,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                '\$${product.price}',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(
+                '${product.title}',
+                style: TextStyle(fontSize: 25),
+              ),
+            ],
+          ),
+        ));
   }
 }
 

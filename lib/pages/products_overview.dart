@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/pages/cart.dart';
 import 'package:provider/provider.dart';
 
+import '../pages/cart.dart';
+import '../widgets/app_drawer.dart';
 import '../models/product.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
@@ -64,6 +65,7 @@ class _ProductsOverviewState extends State<ProductsOverview> {
         ],
         title: Text('My Shop'),
       ),
+      drawer: AppDrawer(),
       body: ProductsGrid(_onlyFavorites),
     );
   }
