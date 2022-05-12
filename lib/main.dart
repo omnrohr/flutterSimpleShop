@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/pages/orders_view.dart';
-import '../providers/provider_products.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/provider_products.dart';
 import './pages/products_overview.dart';
 import './pages/cart.dart';
 import './models/cart.dart';
 import './models/order.dart';
+import '../pages/orders_view.dart';
+import '../pages/user_products_view.dart';
+import '../pages/adding_editing_product_view.dart';
 
 void main() => runApp(MyApp());
 
@@ -39,6 +41,9 @@ class MyApp extends StatelessWidget {
               ProductsOverview(),
           CartView.cartRout: (context) => CartView(),
           Orders.ordersRout: (context) => OrdersView(),
+          UserProductsView.userProductURL: (context) => UserProductsView(),
+          AddingEditingProductView.addingEditingProductURL: (context) =>
+              AddingEditingProductView(),
         },
       ),
     );
