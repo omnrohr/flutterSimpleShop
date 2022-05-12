@@ -46,4 +46,24 @@ class ProviderProduct with ChangeNotifier {
   List<Product> get favoriteItems {
     return _items.where((element) => element.isFavorite).toList();
   }
+
+  void addProduct(Product product) {
+    var newProduct = Product(
+        id: DateTime.now().toString(),
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageURL: product.imageURL);
+    _items.add(newProduct);
+    notifyListeners();
+  }
+
+  void updateProduct(String id, Product newProduct) {
+    final lookUpItem = _items.indexWhere((element) => element.id == id);
+    print('$lookUpItem loook up item');
+    if (lookUpItem >= 0) {
+      _items[lookUpItem] = newProduct;
+      notifyListeners();
+    }
+  }
 }

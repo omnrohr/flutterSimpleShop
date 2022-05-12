@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/product.dart';
+import '../providers/provider_products.dart';
 
 class AddingEditingProductView extends StatefulWidget {
   static const addingEditingProductURL = '/add-edit-product';
@@ -15,6 +17,35 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
   final _formGlobalKey = GlobalKey<FormState>();
   var _editedProduct =
       Product(id: null, title: '', description: '', price: 0, imageURL: '');
+
+  bool _firstTimeRun = true;
+
+  var _initValues = {
+    'title': '',
+    'price': '',
+    'description': '',
+    'imageURL': ''
+  };
+
+  @override
+  void didChangeDependencies() {
+    if (_firstTimeRun) {
+      final _toEditProduct = ModalRoute.of(context).settings.arguments;
+      if (_toEditProduct != null) {
+        _editedProduct = _toEditProduct;
+        _initValues = {
+          'title': _editedProduct.title,
+          'price': _editedProduct.price.toString(),
+          'description': _editedProduct.description,
+          // 'imageURL': _toEditProduct.imageURL,
+          'imageURL': '',
+        };
+        _imageUrlController.text = _editedProduct.imageURL;
+      }
+    }
+    _firstTimeRun = true;
+    super.didChangeDependencies();
+  }
 
   @override
   void initState() {
@@ -38,16 +69,22 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
 
   void _saveData() {
     final isValid = _formGlobalKey.currentState.validate();
-    if (!isValid) {
-      return;
-    }
+    if (!isValid) return;
     _formGlobalKey.currentState.save();
+    if (_editedProduct.id != null) {
+      Provider.of<ProviderProduct>(context, listen: false)
+          .updateProduct(_editedProduct.id, _editedProduct);
+    } else {
+      Provider.of<ProviderProduct>(context, listen: false)
+          .addProduct(_editedProduct);
+    }
+    Navigator.pop(context);
   }
 
   bool validateInputs(String value, bool isNumber) {
     if (value.isEmpty) {
       return false;
-    } else if (isNumber && double.parse(value) > 0) {
+    } else if (isNumber && double.tryParse(value) <= 0) {
       return false;
     } else {
       return true;
@@ -74,13 +111,15 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
             child: Column(
               children: [
                 TextFormField(
+                  initialValue: _initValues['title'],
                   decoration: const InputDecoration(
                     label: Text('Product title:'),
                   ),
                   textInputAction: TextInputAction.next,
                   onSaved: (value) {
                     _editedProduct = Product(
-                        id: null,
+                        id: _editedProduct.id,
+                        isFavorite: _editedProduct.isFavorite,
                         title: value,
                         price: _editedProduct.price,
                         imageURL: _editedProduct.imageURL,
@@ -94,6 +133,7 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                   },
                 ),
                 TextFormField(
+                  initialValue: _initValues['price'],
                   decoration: const InputDecoration(
                     label: Text('Price:'),
                   ),
@@ -102,7 +142,8 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                   // focusNode: _priceFocusNode,
                   onSaved: (value) {
                     _editedProduct = Product(
-                        id: null,
+                        id: _editedProduct.id,
+                        isFavorite: _editedProduct.isFavorite,
                         title: _editedProduct.title,
                         price: double.parse(value),
                         imageURL: _editedProduct.imageURL,
@@ -119,6 +160,7 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                 ),
                 TextFormField(
                   maxLines: 3,
+                  initialValue: _initValues['description'],
                   decoration: const InputDecoration(
                     label: Text('Description:'),
                   ),
@@ -129,7 +171,8 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                   // focusNode: _descriptionFocusNode,
                   onSaved: (value) {
                     _editedProduct = Product(
-                        id: null,
+                        id: _editedProduct.id,
+                        isFavorite: _editedProduct.isFavorite,
                         title: _editedProduct.title,
                         price: _editedProduct.price,
                         imageURL: _editedProduct.imageURL,
@@ -162,6 +205,7 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                     ),
                     Expanded(
                       child: TextFormField(
+                        // initialValue: _initValues['imageURL'], we are using controller and we can not use controller and initialValue together.
                         decoration: const InputDecoration(
                           label: Text('Image URL'),
                         ),
@@ -177,7 +221,8 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                         },
                         onSaved: (value) {
                           _editedProduct = Product(
-                              id: null,
+                              id: _editedProduct.id,
+                              isFavorite: _editedProduct.isFavorite,
                               title: _editedProduct.title,
                               price: _editedProduct.price,
                               imageURL: value,
@@ -187,6 +232,7 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                           if (value.isEmpty) {
                             return 'Please provide an image link';
                           }
+                          return null;
                         },
                       ),
                     ),

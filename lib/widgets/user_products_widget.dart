@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/pages/adding_editing_product_view.dart';
 
 import '../models/product.dart';
 
@@ -16,7 +17,11 @@ class UserProductWidget extends StatelessWidget {
         width: 100,
         child: Row(children: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(
+                  context, AddingEditingProductView.addingEditingProductURL,
+                  arguments: product);
+            },
             icon: Icon(Icons.edit),
           ),
           IconButton(
