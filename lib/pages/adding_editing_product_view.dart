@@ -12,6 +12,9 @@ class AddingEditingProductView extends StatefulWidget {
 class _AddingEditingProductViewState extends State<AddingEditingProductView> {
   final _imageFocusNode = FocusNode();
   final _imageUrlController = TextEditingController();
+  final _formGlobalKey = GlobalKey<FormState>();
+  var _editedProduct =
+      Product(id: null, title: '', description: '', price: 0, imageURL: '');
 
   @override
   void initState() {
@@ -33,6 +36,24 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
     }
   }
 
+  void _saveData() {
+    final isValid = _formGlobalKey.currentState.validate();
+    if (!isValid) {
+      return;
+    }
+    _formGlobalKey.currentState.save();
+  }
+
+  bool validateInputs(String value, bool isNumber) {
+    if (value.isEmpty) {
+      return false;
+    } else if (isNumber && double.parse(value) > 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,11 +61,7 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
         title: const Text('Edit product'),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.edit),
-          ),
-          IconButton(
-            onPressed: () {},
+            onPressed: _saveData,
             icon: const Icon(Icons.save),
           )
         ],
@@ -52,6 +69,7 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: Form(
+          key: _formGlobalKey,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -60,6 +78,20 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                     label: Text('Product title:'),
                   ),
                   textInputAction: TextInputAction.next,
+                  onSaved: (value) {
+                    _editedProduct = Product(
+                        id: null,
+                        title: value,
+                        price: _editedProduct.price,
+                        imageURL: _editedProduct.imageURL,
+                        description: _editedProduct.description);
+                  },
+                  validator: (value) {
+                    if (!validateInputs(value, false)) {
+                      return 'Required field';
+                    }
+                    return null;
+                  },
                 ),
                 TextFormField(
                   decoration: const InputDecoration(
@@ -68,6 +100,22 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
                   // focusNode: _priceFocusNode,
+                  onSaved: (value) {
+                    _editedProduct = Product(
+                        id: null,
+                        title: _editedProduct.title,
+                        price: double.parse(value),
+                        imageURL: _editedProduct.imageURL,
+                        description: _editedProduct.description);
+                  },
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please add a price';
+                    } else if (double.parse(value) <= 0) {
+                      return 'Price can not be 0 or less';
+                    }
+                    return null;
+                  },
                 ),
                 TextFormField(
                   maxLines: 3,
@@ -79,13 +127,22 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                   //   FocusScope.of(context).requestFocus(_descriptionFocusNode);
                   // },
                   // focusNode: _descriptionFocusNode,
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    label: Text('Image link:'),
-                  ),
-                  textInputAction: TextInputAction.done,
-                  keyboardType: TextInputType.url,
+                  onSaved: (value) {
+                    _editedProduct = Product(
+                        id: null,
+                        title: _editedProduct.title,
+                        price: _editedProduct.price,
+                        imageURL: _editedProduct.imageURL,
+                        description: value);
+                  },
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please add some description';
+                    } else if (value.length < 15) {
+                      return 'Please add a descriptive description';
+                    }
+                    return null;
+                  },
                 ),
                 Row(
                   children: [
@@ -97,7 +154,7 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                         border: Border.all(width: 1, color: Colors.grey),
                       ),
                       child: _imageUrlController.text.isEmpty
-                          ? const Text('enter url to preview')
+                          ? const Text('Enter a url to preview')
                           : FittedBox(
                               child: Image.network(_imageUrlController.text),
                               fit: BoxFit.contain,
@@ -115,6 +172,22 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                           setState(() {});
                         },
                         focusNode: _imageFocusNode,
+                        onFieldSubmitted: (_value) {
+                          _saveData();
+                        },
+                        onSaved: (value) {
+                          _editedProduct = Product(
+                              id: null,
+                              title: _editedProduct.title,
+                              price: _editedProduct.price,
+                              imageURL: value,
+                              description: _editedProduct.description);
+                        },
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Please provide an image link';
+                          }
+                        },
                       ),
                     ),
                   ],
