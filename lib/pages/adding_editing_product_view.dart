@@ -6,6 +6,7 @@ import '../providers/provider_products.dart';
 
 class AddingEditingProductView extends StatefulWidget {
   static const addingEditingProductURL = '/add-edit-product';
+
   @override
   State<AddingEditingProductView> createState() =>
       _AddingEditingProductViewState();
