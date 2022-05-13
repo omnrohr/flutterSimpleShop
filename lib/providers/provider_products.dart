@@ -5,7 +5,7 @@ import 'dart:convert';
 import '../models/product.dart';
 
 class ProviderProduct with ChangeNotifier {
-  final List<Product> _items = [
+  List<Product> _items = [
     Product(
       id: 'p1',
       title: 'Red Shirt',
@@ -93,7 +93,21 @@ class ProviderProduct with ChangeNotifier {
         'https://shopapp-b795e-default-rtdb.firebaseio.com/products.json');
     try {
       final response = await http.get(url);
-      print(response.body);
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      List<Product> receivedProducts = [];
+      extractedData.forEach((key, value) {
+        receivedProducts.add(
+          Product(
+              id: key,
+              description: value['description'],
+              imageURL: value['imageURL'],
+              price: value['price'],
+              title: value['title'],
+              isFavorite: value['isFavorite']),
+        );
+        _items = receivedProducts;
+        notifyListeners();
+      });
     } catch (err) {
       rethrow;
     }

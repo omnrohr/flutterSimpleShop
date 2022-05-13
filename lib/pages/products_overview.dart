@@ -21,10 +21,17 @@ class ProductsOverview extends StatefulWidget {
 
 class _ProductsOverviewState extends State<ProductsOverview> {
   bool _onlyFavorites = false;
+  var _isLoading = true;
 
   @override
   void initState() {
-    Provider.of<ProviderProduct>(context, listen: false).fetchProducts();
+    Provider.of<ProviderProduct>(context, listen: false)
+        .fetchProducts()
+        .then((value) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
     super.initState();
   }
 
@@ -73,7 +80,11 @@ class _ProductsOverviewState extends State<ProductsOverview> {
         title: Text('My Shop'),
       ),
       drawer: AppDrawer(),
-      body: ProductsGrid(_onlyFavorites),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductsGrid(_onlyFavorites),
     );
   }
 }
