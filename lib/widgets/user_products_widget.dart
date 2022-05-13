@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/providers/provider_products.dart';
 import 'package:provider/provider.dart';
-import '../pages/adding_editing_product_view.dart';
 
+import '../pages/adding_editing_product_view.dart';
+import '../providers/provider_products.dart';
 import '../models/product.dart';
 
 class UserProductWidget extends StatelessWidget {
@@ -10,6 +10,7 @@ class UserProductWidget extends StatelessWidget {
   UserProductWidget(this.product);
   @override
   Widget build(BuildContext context) {
+    final scaffold = ScaffoldMessenger.of(context);
     return ListTile(
       title: Text(product.title),
       leading: CircleAvatar(
@@ -24,14 +25,20 @@ class UserProductWidget extends StatelessWidget {
                   context, AddingEditingProductView.addingEditingProductURL,
                   arguments: product);
             },
-            icon: Icon(Icons.edit),
+            icon: const Icon(Icons.edit),
           ),
           IconButton(
-            onPressed: () {
-              Provider.of<ProviderProduct>(context, listen: false)
-                  .deleteProduct(product.id);
+            onPressed: () async {
+              try {
+                await Provider.of<ProviderProduct>(context, listen: false)
+                    .deleteProduct(product.id);
+              } catch (e) {
+                scaffold.showSnackBar(
+                    SnackBar(content: Text('item can not be deleted $e')));
+                rethrow;
+              }
             },
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
           )
         ]),
       ),

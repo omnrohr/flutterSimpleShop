@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import '../models/http_exception.dart';
 
 import '../models/product.dart';
 
@@ -75,17 +76,42 @@ class ProviderProduct with ChangeNotifier {
     }
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final lookUpItem = _items.indexWhere((element) => element.id == id);
     if (lookUpItem >= 0) {
+      final url = Uri.parse(
+          'https://shopapp-b795e-default-rtdb.firebaseio.com/products/$id.json');
+      await http.patch(
+        url,
+        body: json.encode(
+          {
+            'title': newProduct.title,
+            'price': newProduct.price,
+            'imageURL': newProduct.imageURL,
+            'description': newProduct.description
+          },
+        ),
+      );
       _items[lookUpItem] = newProduct;
       notifyListeners();
     }
   }
 
-  void deleteProduct(String id) {
+  Future<void> deleteProduct(String id) async {
+    final url = Uri.parse(
+        'https://shopapp-b795e-default-rtdb.firebaseio.com/products/$id');
+    final existingProductIndex =
+        _items.indexWhere((element) => element.id == id);
+    var existingProductPointer = _items[existingProductIndex];
     _items.removeWhere((element) => element.id == id);
     notifyListeners();
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProductPointer);
+      notifyListeners();
+      throw HttpException('Invalid url');
+    }
+    existingProductPointer = null;
   }
 
   Future<void> fetchProducts() async {

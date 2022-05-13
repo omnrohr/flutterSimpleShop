@@ -78,12 +78,8 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
       _isLoading = true;
     });
     if (_editedProduct.id != null) {
-      Provider.of<ProviderProduct>(context, listen: false)
+      await Provider.of<ProviderProduct>(context, listen: false)
           .updateProduct(_editedProduct.id, _editedProduct);
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.pop(context);
     } else {
       try {
         await Provider.of<ProviderProduct>(context, listen: false)
@@ -115,6 +111,10 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
         Navigator.pop(context);
       }
     }
+    setState(() {
+      _isLoading = false;
+    });
+    Navigator.pop(context);
   }
 
   bool validateInputs(String value, bool isNumber) {
