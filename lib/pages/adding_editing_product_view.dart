@@ -69,7 +69,7 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
     }
   }
 
-  void _saveData() {
+  Future<void> _saveData() async {
     final isValid = _formGlobalKey.currentState.validate();
     if (!isValid) return;
     _formGlobalKey.currentState.save();
@@ -84,10 +84,11 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
       });
       Navigator.pop(context);
     } else {
-      Provider.of<ProviderProduct>(context, listen: false)
-          .addProduct(_editedProduct)
-          .catchError((error) {
-        return showDialog<Null>(
+      try {
+        await Provider.of<ProviderProduct>(context, listen: false)
+            .addProduct(_editedProduct);
+      } catch (error) {
+        await showDialog<Null>(
             context: context,
             builder: (ctx) => AlertDialog(
                   title: const Text('Error'),
@@ -100,16 +101,18 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
                           //   _isLoading = false;
                           // });
                           // Navigator.pop(context);
+                          // this code replace by adding <Null> type to showDialog.
+                          // with that the resolving throw error will be ok btn and then method will continue execution
                         },
                         child: const Text('OK'))
                   ],
                 ));
-      }).then((value) {
+      } finally {
         setState(() {
           _isLoading = false;
         });
         Navigator.pop(context);
-      });
+      }
     }
   }
 

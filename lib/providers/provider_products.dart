@@ -50,19 +50,18 @@ class ProviderProduct with ChangeNotifier {
     return _items.where((element) => element.isFavorite).toList();
   }
 
-  Future<void> addProduct(Product product) {
-    final url =
-        Uri.parse('https://shopapp-b795e-default-rtdb.firebaseio.com/products');
-    return http
-        .post(url,
-            body: json.encode({
-              'title': product.title,
-              'description': product.description,
-              'price': product.price,
-              'imageURL': product.imageURL,
-              'isFavorite': product.isFavorite,
-            }))
-        .then((response) {
+  Future<void> addProduct(Product product) async {
+    final url = Uri.parse(
+        'https://shopapp-b795e-default-rtdb.firebaseio.com/products.json');
+    try {
+      final response = await http.post(url,
+          body: json.encode({
+            'title': product.title,
+            'description': product.description,
+            'price': product.price,
+            'imageURL': product.imageURL,
+            'isFavorite': product.isFavorite,
+          }));
       final newProduct = Product(
           id: json.decode(response.body)['name'],
           title: product.title,
@@ -71,14 +70,13 @@ class ProviderProduct with ChangeNotifier {
           imageURL: product.imageURL);
       _items.add(newProduct);
       notifyListeners();
-    }).catchError((onError) {
-      throw onError;
-    });
+    } catch (err) {
+      rethrow;
+    }
   }
 
   void updateProduct(String id, Product newProduct) {
     final lookUpItem = _items.indexWhere((element) => element.id == id);
-    print('$lookUpItem loook up item');
     if (lookUpItem >= 0) {
       _items[lookUpItem] = newProduct;
       notifyListeners();
@@ -88,5 +86,16 @@ class ProviderProduct with ChangeNotifier {
   void deleteProduct(String id) {
     _items.removeWhere((element) => element.id == id);
     notifyListeners();
+  }
+
+  Future<void> fetchProducts() async {
+    final url = Uri.parse(
+        'https://shopapp-b795e-default-rtdb.firebaseio.com/products.json');
+    try {
+      final response = await http.get(url);
+      print(response.body);
+    } catch (err) {
+      rethrow;
+    }
   }
 }

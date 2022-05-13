@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/provider_products.dart';
 import '../pages/cart.dart';
 import '../widgets/app_drawer.dart';
 import '../models/product.dart';
@@ -20,6 +21,12 @@ class ProductsOverview extends StatefulWidget {
 
 class _ProductsOverviewState extends State<ProductsOverview> {
   bool _onlyFavorites = false;
+
+  @override
+  void initState() {
+    Provider.of<ProviderProduct>(context, listen: false).fetchProducts();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
