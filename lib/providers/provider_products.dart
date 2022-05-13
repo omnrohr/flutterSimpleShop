@@ -1,4 +1,7 @@
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'dart:convert';
+
 import '../models/product.dart';
 
 class ProviderProduct with ChangeNotifier {
@@ -47,15 +50,30 @@ class ProviderProduct with ChangeNotifier {
     return _items.where((element) => element.isFavorite).toList();
   }
 
-  void addProduct(Product product) {
-    var newProduct = Product(
-        id: DateTime.now().toString(),
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        imageURL: product.imageURL);
-    _items.add(newProduct);
-    notifyListeners();
+  Future<void> addProduct(Product product) {
+    final url =
+        Uri.parse('https://shopapp-b795e-default-rtdb.firebaseio.com/products');
+    return http
+        .post(url,
+            body: json.encode({
+              'title': product.title,
+              'description': product.description,
+              'price': product.price,
+              'imageURL': product.imageURL,
+              'isFavorite': product.isFavorite,
+            }))
+        .then((response) {
+      final newProduct = Product(
+          id: json.decode(response.body)['name'],
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imageURL: product.imageURL);
+      _items.add(newProduct);
+      notifyListeners();
+    }).catchError((onError) {
+      throw onError;
+    });
   }
 
   void updateProduct(String id, Product newProduct) {
