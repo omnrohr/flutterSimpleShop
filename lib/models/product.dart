@@ -1,3 +1,5 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 class Product with ChangeNotifier {
@@ -8,6 +10,11 @@ class Product with ChangeNotifier {
   final imageURL;
   bool isFavorite;
 
+  void _rollbackFavorites(bool oldFavorite) {
+    isFavorite = oldFavorite;
+    notifyListeners();
+  }
+
   Product(
       {this.id,
       this.title,
@@ -16,8 +23,46 @@ class Product with ChangeNotifier {
       this.imageURL,
       this.isFavorite = false});
 
-  void toggleFavorite() {
+  Future<void> toggleFavorite() async {
+    final oldFavorite = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
+    final url = Uri.parse(
+        'https://shopapp-b795e-default-rtdb.firebaseio.com/products/$id.json');
+    // http
+    //     .patch(url,
+    //         body: json.encode({
+    //           'isFavorite': isFavorite,
+    //         }))
+    //     .catchError((e) {
+    //   throw e;
+    // }).then((value) {
+    //   if (value.statusCode >= 400) {
+    //     isFavorite = oldFavorate;
+    //     notifyListeners();
+    //     throw Exception('Sorry not completed!');
+    //   }
+    // });
+
+    // or use this method with async and await;
+
+    try {
+      final response = await http.patch(
+        url,
+        body: json.encode(
+          {
+            'isFavorite': isFavorite,
+          },
+        ),
+      );
+      if (response.statusCode >= 400) {
+        // _rollbackFavorites(oldFavorite);
+        // it will fire the function from catch.
+        throw Exception('error in server!');
+      }
+    } catch (e) {
+      _rollbackFavorites(oldFavorite);
+      rethrow;
+    }
   }
 }

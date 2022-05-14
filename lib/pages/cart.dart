@@ -11,49 +11,39 @@ class CartView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context, listen: true);
+    final cartTotal = cart.total;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cart Items'),
       ),
       body: Column(children: [
         Card(
-          margin: EdgeInsets.all(15),
+          margin: const EdgeInsets.all(15),
           child: Padding(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text(
+                const Text(
                   'Total',
                   style: TextStyle(fontSize: 20),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Chip(
                   label: Text(
-                    '\$${cart.total.toStringAsFixed(2)}',
+                    '\$${cartTotal.toStringAsFixed(2)}',
                   ),
                   backgroundColor: Colors.amber,
                 ),
-                Spacer(),
-                TextButton(
-                  onPressed: () {
-                    Provider.of<Orders>(context, listen: false)
-                        .addOrder(cart.mapItems.values.toList(), cart.total);
-                    cart.clear();
-                  },
-                  child: Text(
-                    'ORDER NOW',
-                    style: TextStyle(
-                        color: Colors.green, fontWeight: FontWeight.bold),
-                  ),
-                ),
+                const Spacer(),
+                OrderWidget(cart: cart, cartTotal: cartTotal),
               ],
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Expanded(
@@ -63,6 +53,48 @@ class CartView extends StatelessWidget {
               itemCount: cart.mapItems.length),
         ),
       ]),
+    );
+  }
+}
+
+class OrderWidget extends StatefulWidget {
+  const OrderWidget({
+    Key key,
+    @required this.cart,
+    @required this.cartTotal,
+  }) : super(key: key);
+
+  final Cart cart;
+  final double cartTotal;
+
+  @override
+  State<OrderWidget> createState() => _OrderWidgetState();
+}
+
+class _OrderWidgetState extends State<OrderWidget> {
+  var _isLoading = false;
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      child: _isLoading
+          ? const RefreshProgressIndicator()
+          : const Text(
+              'ORDER NOW',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+      onPressed: (widget.cart.total <= 0 || _isLoading)
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+              await Provider.of<Orders>(context, listen: false).addOrder(
+                  widget.cart.mapItems.values.toList(), widget.cartTotal);
+              setState(() {
+                _isLoading = false;
+              });
+              widget.cart.clear();
+            },
     );
   }
 }

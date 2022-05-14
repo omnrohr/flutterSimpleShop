@@ -111,10 +111,6 @@ class _AddingEditingProductViewState extends State<AddingEditingProductView> {
         Navigator.pop(context);
       }
     }
-    setState(() {
-      _isLoading = false;
-    });
-    Navigator.pop(context);
   }
 
   bool validateInputs(String value, bool isNumber) {
