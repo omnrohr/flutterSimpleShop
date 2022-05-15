@@ -65,6 +65,7 @@ class ProviderProduct with ChangeNotifier {
             'description': product.description,
             'price': product.price,
             'imageURL': product.imageURL,
+            'ownerId': userId,
           }));
       final newProduct = Product(
           id: json.decode(response.body)['name'],
@@ -118,17 +119,35 @@ class ProviderProduct with ChangeNotifier {
   }
 
   Future<void> fetchProducts() async {
-    var url = Uri.parse(
-        'https://shopapp-b795e-default-rtdb.firebaseio.com/products.json?auth=$authToken');
+    // var _params;
+    // if (filterByUser) {
+    final _params = <String, String>{
+      'auth': authToken,
+      'orderBy': json.encode("ownerId"),
+      'equalTo': json.encode(userId),
+    };
+    // }
+    // if (filterByUser == false) {
+    //   _params = <String, String>{
+    //     'auth': authToken,
+    //   };
+
+    // var url = Uri.parse(
+    //     'https://shopapp-b795e-default-rtdb.firebaseio.com/products.json?auth=$authToken&orderBy="ownerId"&equalTo"$userId"');
+    var url = Uri.https(
+        'shopapp-b795e-default-rtdb.firebaseio.com', '/products.json', _params);
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      extractedData.forEach((key, value) {});
       List<Product> receivedProducts = [];
       if (extractedData == null) return;
       url = Uri.parse(
           'https://shopapp-b795e-default-rtdb.firebaseio.com/userFavorites/$userId.json?auth=$authToken');
       final favoriteResponse = await http.get(url);
-      final favoriteData = json.decode(favoriteResponse.body);
+
+      final favoriteData =
+          json.decode(favoriteResponse.body) as Map<String, dynamic>;
 
       extractedData.forEach((productId, value) {
         receivedProducts.add(
@@ -142,6 +161,7 @@ class ProviderProduct with ChangeNotifier {
                   ? false
                   : favoriteData[productId] ?? false),
         );
+
         _items = receivedProducts;
         notifyListeners();
       });
