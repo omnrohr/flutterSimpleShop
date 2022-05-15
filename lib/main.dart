@@ -9,6 +9,8 @@ import './models/order.dart';
 import '../pages/orders_view.dart';
 import '../pages/user_products_view.dart';
 import '../pages/adding_editing_product_view.dart';
+import '../pages/auth_view.dart';
+import '../models/auth.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,33 +20,44 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => ProviderProduct(),
+        ChangeNotifierProvider(create: (_) => Auth()),
+        ChangeNotifierProxyProvider<Auth, ProviderProduct>(
+          update: (ctx, auth, previusProducts) => ProviderProduct(
+              auth.token,
+              auth.userId,
+              previusProducts == null ? [] : previusProducts.items),
         ),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+            update: (ctx, auth, prevItems) => Orders(
+                auth.token, prevItems == null ? [] : prevItems.orderItems)),
         ChangeNotifierProvider(
           create: (_) => Cart(),
         ),
         // value: ProviderProduct(),
-        ChangeNotifierProvider(create: (_) => Orders()),
       ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData.dark().copyWith(
-          textTheme: const TextTheme(
-            headline6: TextStyle(
-                fontFamily: 'Lato', fontWeight: FontWeight.bold, fontSize: 25),
+      child: Consumer<Auth>(
+        builder: (ctx, userData, child) => MaterialApp(
+          title: 'Flutter Demo',
+          theme: ThemeData.dark().copyWith(
+            textTheme: const TextTheme(
+              headline6: TextStyle(
+                  fontFamily: 'Lato',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25),
+            ),
           ),
+          home: userData.isAuthenticated ? ProductsOverview() : AuthScreen(),
+          routes: {
+            ProductsOverview.productsOverviewRout: (context) =>
+                ProductsOverview(),
+            CartView.cartRout: (context) => CartView(),
+            Orders.ordersRout: (context) => OrdersView(),
+            UserProductsView.userProductURL: (context) => UserProductsView(),
+            AddingEditingProductView.addingEditingProductURL: (context) =>
+                AddingEditingProductView(),
+            AuthScreen.authRouteName: (context) => AuthScreen(),
+          },
         ),
-        home: ProductsOverview(),
-        routes: {
-          ProductsOverview.productsOverviewRout: (context) =>
-              ProductsOverview(),
-          CartView.cartRout: (context) => CartView(),
-          Orders.ordersRout: (context) => OrdersView(),
-          UserProductsView.userProductURL: (context) => UserProductsView(),
-          AddingEditingProductView.addingEditingProductURL: (context) =>
-              AddingEditingProductView(),
-        },
       ),
     );
   }

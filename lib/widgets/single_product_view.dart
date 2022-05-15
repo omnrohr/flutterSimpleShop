@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../pages/single_product_details.dart';
 import '../models/cart.dart';
+import '../models/auth.dart';
 
 class SingleProductView extends StatelessWidget {
   // final Product product;
@@ -13,6 +14,7 @@ class SingleProductView extends StatelessWidget {
   Widget build(BuildContext context) {
     final providerProduct = Provider.of<Product>(context);
     final cart = Provider.of<Cart>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(4),
@@ -23,7 +25,7 @@ class SingleProductView extends StatelessWidget {
                 ? Icons.favorite
                 : Icons.favorite_border),
             onPressed: () {
-              providerProduct.toggleFavorite();
+              providerProduct.toggleFavorite(authData.token, authData.userId);
             },
           ),
           trailing: IconButton(
