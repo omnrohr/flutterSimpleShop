@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/order.dart';
 import '../pages/user_products_view.dart';
+import '../models/auth.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -39,6 +41,19 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pushReplacementNamed(
                   context, UserProductsView.userProductURL);
+            },
+          ),
+          Divider(
+            color: Colors.white,
+          ),
+          ListTile(
+            leading: const Icon(Icons.exit_to_app),
+            title: const Text('Logout'),
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.of(context)
+                  .pushReplacementNamed('/'); //close teh drawer
+              Provider.of<Auth>(context, listen: false).logout();
             },
           )
         ],

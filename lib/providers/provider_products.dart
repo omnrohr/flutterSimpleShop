@@ -118,19 +118,16 @@ class ProviderProduct with ChangeNotifier {
     existingProductPointer = null;
   }
 
-  Future<void> fetchProducts() async {
-    // var _params;
-    // if (filterByUser) {
-    final _params = <String, String>{
-      'auth': authToken,
-      'orderBy': json.encode("ownerId"),
-      'equalTo': json.encode(userId),
-    };
-    // }
-    // if (filterByUser == false) {
-    //   _params = <String, String>{
-    //     'auth': authToken,
-    //   };
+  Future<void> fetchProducts([bool filterByUser = false]) async {
+    final _params = filterByUser
+        ? {
+            'auth': authToken,
+            'orderBy': '"ownerId"',
+            'equalTo': '"$userId"',
+          }
+        : {
+            'auth': authToken,
+          };
 
     // var url = Uri.parse(
     //     'https://shopapp-b795e-default-rtdb.firebaseio.com/products.json?auth=$authToken&orderBy="ownerId"&equalTo"$userId"');
