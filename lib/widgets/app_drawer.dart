@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/order.dart';
+import '../helpers/custom_rout.dart';
+import '../pages/orders_view.dart';
 import '../pages/user_products_view.dart';
 import '../models/auth.dart';
 
@@ -29,7 +30,12 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.payment),
             title: const Text('Orders'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, Orders.ordersRout);
+              // Navigator.pushReplacementNamed(context, Orders.ordersRout);
+              Navigator.pushReplacement(
+                  context,
+                  CustomRout(
+                    builder: (ctx) => OrdersView(),
+                  ));
             },
           ),
           Divider(

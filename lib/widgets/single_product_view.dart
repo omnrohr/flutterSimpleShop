@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/providers/provider_products.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../pages/single_product_details.dart';
@@ -58,21 +59,25 @@ class SingleProductView extends StatelessWidget {
           ),
         ),
         child: GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: ((_) {
-                  return SingleProductDetails(providerProduct.id);
-                }),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: ((_) {
+                    return SingleProductDetails(providerProduct.id);
+                  }),
+                ),
+              );
+            },
+            child: Hero(
+              tag: providerProduct.id,
+              child: FadeInImage(
+                placeholder:
+                    AssetImage('lib/assets/images/product-placeholder.png'),
+                image: NetworkImage(providerProduct.imageURL),
+                fit: BoxFit.cover,
               ),
-            );
-          },
-          child: Image.network(
-            providerProduct.imageURL,
-            fit: BoxFit.cover,
-          ),
-        ),
+            )),
       ),
     );
   }

@@ -16,18 +16,31 @@ class SingleProductDetails extends StatelessWidget {
     );
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(product.title),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                child: Image.network(
-                  product.imageURL,
-                  fit: BoxFit.cover,
-                ),
+        // appBar: AppBar(
+        //   title: Text(product.title),
+        // ),
+        body: CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          expandedHeight: 300,
+          pinned: true,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Text(
+              product.title,
+            ),
+            background: Hero(
+              tag: product.id,
+              child: Image.network(
+                product.imageURL,
+                fit: BoxFit.cover,
               ),
+            ),
+          ),
+        ),
+        SliverList(
+            delegate: SliverChildListDelegate([
+          Column(
+            children: [
               SizedBox(
                 height: 10,
               ),
@@ -40,9 +53,14 @@ class SingleProductDetails extends StatelessWidget {
                 '${product.title}',
                 style: TextStyle(fontSize: 25),
               ),
+              SizedBox(
+                height: 800,
+              )
             ],
           ),
-        ));
+        ])),
+      ],
+    ));
   }
 }
 
